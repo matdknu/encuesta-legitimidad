@@ -1,6 +1,6 @@
 ---
 title: "Encuesta de Legitimidad de Carabineros. Violencia, Derechos Humanos y Control Social (2021 - 2022)"
-subtitle: "Según NSE y Posición política por Ola de medición"
+subtitle: "Según NSE y Posición política por Ola de medición "
 author: "Matías Deneken & Luciano Saez"
 format: html
 execute: 
