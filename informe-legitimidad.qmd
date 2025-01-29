@@ -1,0 +1,877 @@
+---
+title: "Encuesta de Legitimidad de Carabineros. Violencia, Derechos Humanos y Control Social (2021 - 2022)"
+subtitle: "Según NSE y Posición política por Ola de medición"
+author: "Matías Deneken & Luciano Saez"
+format: html
+execute: 
+  echo: false
+  warning: false
+  message: false
+editor: visual
+---
+
+```{r}
+pacman::p_load(tidyverse,
+               dplyr
+)
+```
+
+```{r}
+data <- readRDS("~/Dropbox/OLES/encuesta-legitimidad/bbdd/oles_long.rds")
+```
+
+```{r}
+dataf <-data %>%
+  select(matches("^(a7_|a6_11|a6_12|nse|ola|pospol)"))
+
+# Convertir columnas etiquetadas a numéricas
+dataf <- dataf |> 
+  mutate(across(starts_with("a7_"), as.numeric)) # Convierte las columnas a numérico
+
+```
+
+# NSE y a6\_
+
+## a6_11
+
+```{r}
+# Filtrar y preparar los datos
+dataf_a6_11 <- dataf |> 
+  filter(!is.na(a6_11) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a6_11) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup()  # Asegurar el orden explícito de -5 a 5
+```
+
+```{r}
+# Crear gráfico Likert divergente para a6_11 por NSE y Ola
+ggplot(dataf_a6_11, aes(x = nse, y = prop, fill = a6_11)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4",  "orange", 
+      "gray80", 
+      "lightblue", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a6_11",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+   theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 5), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+```
+
+## a6_12
+
+```{r}
+# Filtrar y preparar los datos
+dataf_a6_12 <- dataf |> 
+  filter(!is.na(a6_12) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a6_12) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup()  # Asegurar el orden explícito de -5 a 5
+```
+
+```{r}
+# Crear gráfico Likert divergente para a6_12 por NSE y Ola
+ggplot(dataf_a6_12, aes(x = nse, y = prop, fill = a6_12)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4",  "orange", 
+      "gray80", 
+      "lightblue", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a6_12",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 5), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+```
+
+# NSE y a7\_
+
+## a7_1
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_1 <- dataf |> 
+  filter(!is.na(a7_1) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_1) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_1 = factor(a7_1, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_1, aes(x = nse, y = prop, fill = a7_1)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_1",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+ theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_2
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_2 <- dataf |> 
+  filter(!is.na(a7_2) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_2) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_2 = factor(a7_2, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_2, aes(x = nse, y = prop, fill = a7_2)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_2",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_3
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_3 <- dataf |> 
+  filter(!is.na(a7_3) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_3) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_3 = factor(a7_3, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_3, aes(x = nse, y = prop, fill = a7_3)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_3",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_4
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_4 <- dataf |> 
+  filter(!is.na(a7_4) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_4) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_4 = factor(a7_4, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_4, aes(x = nse, y = prop, fill = a7_4)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_4",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_5
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_5 <- dataf |> 
+  filter(!is.na(a7_5) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_5) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_5 = factor(a7_5, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_5, aes(x = nse, y = prop, fill = a7_5)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_5",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_6
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_6 <- dataf |> 
+  filter(!is.na(a7_6) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_6) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_6 = factor(a7_6, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_6, aes(x = nse, y = prop, fill = a7_6)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_6",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_7
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_7 <- dataf |> 
+  filter(!is.na(a7_7) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_7) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_7 = factor(a7_7, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_7, aes(x = nse, y = prop, fill = a7_7)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_7",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_8
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_8 <- dataf |> 
+  filter(!is.na(a7_8) & !is.na(nse) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, nse, a7_8) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, nse) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_8 = factor(a7_8, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+
+
+# Crear gráfico Likert divergente para a7_1 por NSE y Ola
+ggplot(dataf_a7_8, aes(x = nse, y = prop, fill = a7_8)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_8",
+       subtitle = "Por NSE y OLA",
+       x = "NSE", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+# Posición política y a6\_
+
+```{r}
+# Filtrar y preparar los datos
+dataf_a6_11 <- dataf |> 
+  filter(!is.na(a6_11) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a6_11) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup()  # Asegurar el orden explícito de -5 a 5
+```
+
+```{r}
+# Crear gráfico Likert divergente para a6_11 por pospol y Ola
+ggplot(dataf_a6_11, aes(x = pospol, y = prop, fill = a6_11)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4",  "orange", 
+      "gray80", 
+      "lightblue", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a6_11",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 5), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+```
+
+## a6_12
+
+```{r}
+# Filtrar y preparar los datos
+dataf_a6_12 <- dataf |> 
+  filter(!is.na(a6_12) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a6_12) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup()  # Asegurar el orden explícito de -5 a 5
+```
+
+```{r}
+# Crear gráfico Likert divergente para a6_12 por pospol y Ola
+ggplot(dataf_a6_12, aes(x = pospol, y = prop, fill = a6_12)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4",  "orange", 
+      "gray80", 
+      "lightblue", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a6_12",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 5), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+```
+
+# Posición política y a7\_
+
+## a7_1
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_1 <- dataf |> 
+  filter(!is.na(a7_1) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_1) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_1 = factor(a7_1, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_1, aes(x = pospol, y = prop, fill = a7_1)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_1",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+ theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_2
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_2 <- dataf |> 
+  filter(!is.na(a7_2) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_2) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_2 = factor(a7_2, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_2, aes(x = pospol, y = prop, fill = a7_2)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_2",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_3
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_3 <- dataf |> 
+  filter(!is.na(a7_3) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_3) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_3 = factor(a7_3, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_3, aes(x = pospol, y = prop, fill = a7_3)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_3",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_4
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_4 <- dataf |> 
+  filter(!is.na(a7_4) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_4) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_4 = factor(a7_4, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_4, aes(x = pospol, y = prop, fill = a7_4)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_4",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_5
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_5 <- dataf |> 
+  filter(!is.na(a7_5) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_5) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_5 = factor(a7_5, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_5, aes(x = pospol, y = prop, fill = a7_5)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_5",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_6
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_6 <- dataf |> 
+  filter(!is.na(a7_6) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_6) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_6 = factor(a7_6, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_6, aes(x = pospol, y = prop, fill = a7_6)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_6",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_7
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_7 <- dataf |> 
+  filter(!is.na(a7_7) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_7) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_7 = factor(a7_7, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_7, aes(x = pospol, y = prop, fill = a7_7)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_7",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
+
+## a7_8
+
+```{r}
+
+# Filtrar y preparar los datos
+dataf_a7_8 <- dataf |> 
+  filter(!is.na(a7_8) & !is.na(pospol) & !is.na(ola)) |> # Excluir valores NA
+  group_by(ola, pospol, a7_8) |> 
+  summarise(conteo = n(), .groups = "drop") |> 
+  group_by(ola, pospol) |> 
+  mutate(prop = conteo / sum(conteo) * 100) |> 
+  ungroup() |> 
+  mutate(a7_8 = factor(a7_8, levels = -5:5)) # Asegurar el orden explícito de -5 a 5
+
+
+
+# Crear gráfico Likert divergente para a7_1 por pospol y Ola
+ggplot(dataf_a7_8, aes(x = pospol, y = prop, fill = a7_8)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid(~ ola) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "red4", "red3", "red2", "red1", "orange", 
+      "gray80", 
+      "lightblue", "skyblue2", "deepskyblue3", "blue3", "blue4"
+    ),
+    guide = guide_legend(nrow = 1) # Extender etiquetas en una sola fila
+  ) +
+  labs(title = "Distribución de respuestas para a7_8",
+       subtitle = "Por pospol y OLA",
+       x = "pospol", 
+       y = "Proporción (%)", 
+       fill = "Respuesta Likert") +
+  theme_minimal() +
+  theme(
+    legend.position = "top", # Posicionar la leyenda arriba
+    legend.title = element_text(size = 7), # Tamaño del título de la leyenda
+    legend.text = element_text(size = 6), # Tamaño de las etiquetas
+    legend.key.width = unit(0.2, "cm") # Ancho de los cuadros de la leyenda
+  )
+
+```
